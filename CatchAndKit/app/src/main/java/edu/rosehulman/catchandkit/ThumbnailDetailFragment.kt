@@ -9,6 +9,7 @@ import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_thumbnail_detail.view.*
 
 private const val ARG_THUMBNAIL = "ARG_THUMBNAIL"
+
 class ThumbnailDetailFragment : Fragment() {
     private var thumbnail: Thumbnail? = null
 
@@ -36,15 +37,9 @@ class ThumbnailDetailFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_thumbnail_detail, container, false)
-        val bitmap = BitmapUtils.scaleToFit(context!!, thumbnail!!.url, 400, 400)
-        if (bitmap == null) {
-            Picasso.get()
-                .load(thumbnail!!.url)
-//            .resize(50, 50)
-//            .centerCrop()
-                .into(view.detail_image_view)
-        }
-//       view.detail_image_view.setImageBitmap(bitmap)
+        Picasso.get()
+            .load(thumbnail!!.url)
+            .into(view.detail_image_view)
         return view
     }
 }

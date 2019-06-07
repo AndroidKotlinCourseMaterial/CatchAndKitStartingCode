@@ -75,10 +75,9 @@ class ThumbnailAdapter(
     }
 
     fun add(localPath: String) {
+        // TODO: You'll want to wait to add this to Firetore until after you have a Storage download URL.
+        // Move this line of code there.
         thumbnailRef.add(Thumbnail(localPath))
-        // TODO: Replace with Firebase storage.
-        // https://firebase.google.com/docs/storage/android/upload-files
-
         ImageRescaleTask(localPath).execute()
     }
 
@@ -92,7 +91,9 @@ class ThumbnailAdapter(
         }
 
         override fun onPostExecute(bitmap: Bitmap?) {
-            // TODO: Write and call a new storageAdd() method with the path and bitmap.
+            // TODO: Write and call a new storageAdd() method with the path and bitmap
+            // that uses Firebase storage.
+            // https://firebase.google.com/docs/storage/android/upload-files
         }
     }
 

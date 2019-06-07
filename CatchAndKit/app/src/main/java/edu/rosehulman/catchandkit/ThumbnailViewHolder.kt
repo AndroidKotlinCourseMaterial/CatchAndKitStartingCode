@@ -23,12 +23,8 @@ class ThumbnailViewHolder(
 
     fun bind(thumbnail: Thumbnail) {
         Log.d(Constants.TAG, "URL: ${thumbnail.url}")
-        val bitmap =
-            BitmapUtils.scaleToFit(context, thumbnail.url, 100, 100)
-        if (bitmap == null) {
-            Picasso.get()
-                .load(thumbnail.url)
-                .into(imageView)
-        }
+        Picasso.get()
+            .load(thumbnail.url)
+            .into(imageView)
     }
 }

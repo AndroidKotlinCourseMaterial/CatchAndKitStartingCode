@@ -11,43 +11,6 @@ import android.util.Log
 import java.io.IOException
 
 object BitmapUtils {
-    fun scaleToFit(context: Context, localPath: String, targetW: Int, targetH: Int): Bitmap? {
-        Log.d(Constants.TAG, "Scaling to fit: $localPath ($targetW x $targetH)")
-        return if (localPath.startsWith("content")) {
-            scaleContentBitmapToFit(context, localPath, targetW, targetH)
-        } else if (localPath.startsWith("/storage")) {
-            scaleBitmapToFit(localPath, targetW, targetH)
-        } else {
-            null
-        }
-    }
-
-    private fun scaleBitmapToFit(localPath: String, targetW: Int, targetH: Int): Bitmap {
-        val bmOptions = BitmapFactory.Options().apply {
-            // Get the dimensions of the bitmap
-            inJustDecodeBounds = true
-            BitmapFactory.decodeFile(localPath, this)
-            val photoW: Int = outWidth
-            val photoH: Int = outHeight
-
-            // Determine how much to scaleToFit down the image
-            val scaleFactor: Int = Math.min(photoW / targetW, photoH / targetH)
-
-            // Decode the image file into a Bitmap sized to fill the View
-            inJustDecodeBounds = false
-            inSampleSize = scaleFactor
-        }
-        return BitmapFactory.decodeFile(localPath, bmOptions)
-    }
-
-    private fun scaleContentBitmapToFit(context: Context, localPath: String, targetW: Int, targetH: Int): Bitmap {
-        val bitmap = MediaStore.Images.Media.getBitmap(context.contentResolver, Uri.parse(localPath))
-        val photoW = bitmap.width
-        val photoH = bitmap.height
-        val scaleFactor: Int = Math.min(photoW / targetW, photoH / targetH)
-        return Bitmap.createScaledBitmap(bitmap, photoW / scaleFactor, photoH / scaleFactor, true)
-    }
-
     fun rotateAndScaleByRatio(context: Context, localPath: String, ratio: Int): Bitmap? {
         Log.d(Constants.TAG, "Rotating and scaling by ratio: $localPath")
         return if (localPath.startsWith("content")) {
@@ -75,6 +38,7 @@ object BitmapUtils {
             null
         }
     }
+
     private fun rotateAndScaleBitmapByRatio(exif: ExifInterface?, bitmap: Bitmap, ratio: Int): Bitmap {
         val photoW = bitmap.width
         val photoH = bitmap.height
@@ -95,6 +59,4 @@ object BitmapUtils {
         matrix.setRotate(rotationAngle.toFloat(), bm.width.toFloat() / 2, bm.height.toFloat() / 2)
         return Bitmap.createBitmap(bm, 0, 0, bm.width, bm.height, matrix, true)
     }
-
-
 }
