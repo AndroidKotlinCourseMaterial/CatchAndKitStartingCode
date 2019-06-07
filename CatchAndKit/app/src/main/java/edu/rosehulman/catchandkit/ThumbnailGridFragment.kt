@@ -23,14 +23,15 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 private const val ARG_COLUMNS = "ARG_COLUMNS"
+private const val RC_TAKE_PICTURE = 1
+private const val RC_CHOOSE_PICTURE = 2
+
 class ThumbnailGridFragment : Fragment() {
     private var listener: OnThumbnailListener? = null
     private lateinit var adapter: ThumbnailAdapter
-    private val RC_TAKE_PICTURE = 1
-    private val RC_CHOOSE_PICTURE = 2
 
     private var currentPhotoPath = ""
-    lateinit var rootView: RecyclerView
+    private lateinit var rootView: RecyclerView
 
     private var columns = 3
 
@@ -52,12 +53,6 @@ class ThumbnailGridFragment : Fragment() {
                 }
             }
     }
-
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        currentPhotoPath = savedInstanceState?.getString(Constants.KEY_URL, "") ?: ""
-//        adapter = ThumbnailAdapter(context!!, listener)
-//    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

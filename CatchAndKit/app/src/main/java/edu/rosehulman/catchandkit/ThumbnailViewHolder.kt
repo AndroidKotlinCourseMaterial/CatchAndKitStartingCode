@@ -1,7 +1,6 @@
 package edu.rosehulman.catchandkit
 
 import android.content.Context
-import android.graphics.drawable.BitmapDrawable
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.View

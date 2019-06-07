@@ -3,17 +3,20 @@ package edu.rosehulman.catchandkit
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Matrix
 import android.net.Uri
 import android.provider.MediaStore
+import android.support.media.ExifInterface
 import android.util.Log
+import java.io.IOException
 
 object BitmapUtils {
     fun scaleToFit(context: Context, localPath: String, targetW: Int, targetH: Int): Bitmap? {
         Log.d(Constants.TAG, "Scaling to fit: $localPath ($targetW x $targetH)")
         return if (localPath.startsWith("content")) {
-            BitmapUtils.scaleContentBitmapToFit(context, localPath, targetW, targetH)
+            scaleContentBitmapToFit(context, localPath, targetW, targetH)
         } else if (localPath.startsWith("/storage")) {
-            BitmapUtils.scaleBitmapToFit(localPath, targetW, targetH)
+            scaleBitmapToFit(localPath, targetW, targetH)
         } else {
             null
         }
@@ -45,46 +48,53 @@ object BitmapUtils {
         return Bitmap.createScaledBitmap(bitmap, photoW / scaleFactor, photoH / scaleFactor, true)
     }
 
-    fun getFullSize(context: Context, localPath: String): Bitmap {
-        Log.d(Constants.TAG, "Scaling to keep full size : $localPath")
+    fun rotateAndScaleByRatio(context: Context, localPath: String, ratio: Int): Bitmap? {
+        Log.d(Constants.TAG, "Rotating and scaling by ratio: $localPath")
         return if (localPath.startsWith("content")) {
-            MediaStore.Images.Media.getBitmap(context.contentResolver, Uri.parse(localPath))
-        } else {
-            BitmapFactory.decodeFile(localPath)
-        }
-    }
-
-    fun scaleByRatio(context: Context, localPath: String, ratio: Int): Bitmap? {
-        Log.d(Constants.TAG, "Scaling by ratio: $localPath")
-        return if (localPath.startsWith("content")) {
-            BitmapUtils.scaleContentBitmapByRatio(context, localPath, ratio)
+            val bitmap = MediaStore.Images.Media.getBitmap(context.contentResolver, Uri.parse(localPath))
+            // android-developers.googleblog.com/2016/12/introducing-the-exifinterface-support-library.html
+            // stackoverflow.com/questions/34696787/a-final-answer-on-how-to-get-exif-data-from-uri
+            var exif: ExifInterface? = null
+            try {
+                val inputStream = context.contentResolver.openInputStream(Uri.parse(localPath))!!
+                exif = ExifInterface(inputStream)
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+            return rotateAndScaleBitmapByRatio(exif, bitmap, ratio)
         } else if (localPath.startsWith("/storage")) {
-            BitmapUtils.scaleBitmapByRatioAlternate(localPath, ratio)
+            val bitmap = BitmapFactory.decodeFile(localPath)
+            var exif: ExifInterface? = null
+            try {
+                exif = ExifInterface(localPath)
+            } catch (e: IOException) {
+                Log.e(Constants.TAG, "Exif error: $e")
+            }
+            return rotateAndScaleBitmapByRatio(exif, bitmap, ratio)
         } else {
             null
         }
     }
-
-    private fun scaleContentBitmapByRatio(context: Context, localPath: String, ratio: Int): Bitmap {
-        val bitmap = MediaStore.Images.Media.getBitmap(context.contentResolver, Uri.parse(localPath))
+    private fun rotateAndScaleBitmapByRatio(exif: ExifInterface?, bitmap: Bitmap, ratio: Int): Bitmap {
         val photoW = bitmap.width
         val photoH = bitmap.height
-        return Bitmap.createScaledBitmap(bitmap, photoW / ratio, photoH / ratio, true)
+        val bm = Bitmap.createScaledBitmap(bitmap, photoW / ratio, photoH / ratio, true)
+
+        //guides.codepath.com/android/Accessing-the-Camera-and-Stored-Media#rotating-the-picture
+        val orientString = exif?.getAttribute(ExifInterface.TAG_ORIENTATION)
+        val orientation =
+            if (orientString != null) Integer.parseInt(orientString) else ExifInterface.ORIENTATION_NORMAL
+        var rotationAngle = 0
+        if (orientation == ExifInterface.ORIENTATION_ROTATE_90) rotationAngle = 90
+        if (orientation == ExifInterface.ORIENTATION_ROTATE_180) rotationAngle = 180
+        if (orientation == ExifInterface.ORIENTATION_ROTATE_270) rotationAngle = 270
+        Log.d(Constants.TAG, "Rotation angle: $rotationAngle")
+
+        // Rotate Bitmap
+        val matrix = Matrix()
+        matrix.setRotate(rotationAngle.toFloat(), bm.width.toFloat() / 2, bm.height.toFloat() / 2)
+        return Bitmap.createBitmap(bm, 0, 0, bm.width, bm.height, matrix, true)
     }
 
-    private fun scaleBitmapByRatio(localPath: String, ratio: Int): Bitmap {
-        val bmOptions = BitmapFactory.Options()
-        bmOptions.inJustDecodeBounds = false
-        bmOptions.inSampleSize = ratio
-        return BitmapFactory.decodeFile(localPath, bmOptions)
-    }
-
-    private fun scaleBitmapByRatioAlternate(localPath: String, ratio: Int): Bitmap {
-        val bitmap = BitmapFactory.decodeFile(localPath)
-        val photoW = bitmap.width
-        val photoH = bitmap.height
-        Log.d(Constants.TAG, "Dims are ($photoW, $photoH)")
-        return Bitmap.createScaledBitmap(bitmap, photoW / ratio, photoH / ratio, true)
-    }
 
 }

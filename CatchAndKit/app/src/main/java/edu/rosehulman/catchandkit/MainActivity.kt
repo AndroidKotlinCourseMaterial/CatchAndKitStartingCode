@@ -1,6 +1,5 @@
 package edu.rosehulman.catchandkit
 
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Bundle
@@ -12,12 +11,6 @@ import android.view.Menu
 import android.view.MenuItem
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_main.*
-import com.google.firebase.auth.FirebaseUser
-import android.support.annotation.NonNull
-import android.support.v4.app.FragmentActivity
-import com.google.android.gms.tasks.OnFailureListener
-import com.google.firebase.auth.AuthResult
-import com.google.android.gms.tasks.OnSuccessListener
 
 
 class MainActivity :

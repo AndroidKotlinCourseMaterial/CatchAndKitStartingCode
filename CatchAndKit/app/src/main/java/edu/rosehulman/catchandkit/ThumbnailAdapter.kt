@@ -2,26 +2,19 @@ package edu.rosehulman.catchandkit
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.net.Uri
 import android.os.AsyncTask
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import com.google.android.gms.tasks.Continuation
-import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.QuerySnapshot
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.UploadTask
-import java.io.ByteArrayOutputStream
-import kotlin.random.Random
 
 class ThumbnailAdapter(
     val context: Context,
-    val listener: ThumbnailGridFragment.OnThumbnailListener?
+    private val listener: ThumbnailGridFragment.OnThumbnailListener?
 ) : RecyclerView.Adapter<ThumbnailViewHolder>() {
     private val thumbnails = ArrayList<Thumbnail>()
 
@@ -89,12 +82,13 @@ class ThumbnailAdapter(
         ImageRescaleTask(localPath).execute()
     }
 
-    // Saves a smaller version to Storage to save time on the network.
+    // Could save a smaller version to Storage to save time on the network.
+    // But if too small, recognition accuracy can suffer.
     inner class ImageRescaleTask(val localPath: String) : AsyncTask<Void, Void, Bitmap>() {
         override fun doInBackground(vararg p0: Void?): Bitmap? {
-            // Reduces length and width by a factor of 8.
-            val ratio = 8
-            return BitmapUtils.scaleByRatio(context, localPath, ratio)
+            // Reduces length and width by a factor (currently 1 = no rescaling).
+            val ratio = 1
+            return BitmapUtils.rotateAndScaleByRatio(context, localPath, ratio)
         }
 
         override fun onPostExecute(bitmap: Bitmap?) {
