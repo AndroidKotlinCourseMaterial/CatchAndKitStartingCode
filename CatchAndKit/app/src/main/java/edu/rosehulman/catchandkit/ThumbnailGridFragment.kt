@@ -92,7 +92,8 @@ class ThumbnailGridFragment : Fragment() {
         builder.create().show()
     }
 
-    // Everything camera- and storage-related is from https://developer.android.com/training/camera/photobasics
+    // Everything camera- and storage-related is from
+    // https://developer.android.com/training/camera/photobasics
     private fun launchCameraIntent() {
         Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
             // Ensure that there's a camera activity to handle the intent

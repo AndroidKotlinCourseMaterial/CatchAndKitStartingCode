@@ -89,6 +89,8 @@ class MainActivity :
         }
     }
 
+    // Android’s security policy requires permissions to be requested
+    // before some features are used.
     private fun checkPermissions() {
         // Check to see if we already have permissions
         if (ContextCompat
@@ -106,6 +108,7 @@ class MainActivity :
         }
     }
 
+    // Callback once permissions are granted.
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>, grantResults: IntArray
@@ -122,10 +125,6 @@ class MainActivity :
                 return
             }
         }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
     }
 
     override fun onThumbnailSelected(thumbnail: Thumbnail) {
