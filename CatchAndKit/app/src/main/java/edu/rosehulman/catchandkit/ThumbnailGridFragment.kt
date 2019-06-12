@@ -200,5 +200,6 @@ class ThumbnailGridFragment : Fragment() {
 
     interface OnThumbnailListener {
         fun onThumbnailSelected(thumbnail: Thumbnail)
+        fun getTaskType(): MLKitTaskType
     }
 }

@@ -5,6 +5,7 @@ import android.content.res.Configuration
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
@@ -16,9 +17,12 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity :
     AppCompatActivity(),
     ThumbnailGridFragment.OnThumbnailListener {
+
     private val WRITE_EXTERNAL_STORAGE_PERMISSION = 2
 
     private val auth = FirebaseAuth.getInstance()
+
+    private var taskType = MLKitTaskType.LABEL
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,9 +81,28 @@ class MainActivity :
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
-            R.id.action_settings -> true
+            R.id.action_settings -> {
+                showMlKitTaskTypeDialog()
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun showMlKitTaskTypeDialog() {
+        val builder = AlertDialog.Builder(this)
+        builder.setItems(
+            resources.getStringArray(R.array.task_names))
+        { _, which ->
+            taskType = when (which) {
+                0 -> MLKitTaskType.OCR
+                1 -> MLKitTaskType.OCR_CLOUD
+                2 -> MLKitTaskType.LABEL
+                else -> MLKitTaskType.LABEL
+            }
+        }
+        builder.create()
+            .show()
     }
 
     // Android’s security policy requires permissions to be requested
@@ -125,5 +148,9 @@ class MainActivity :
         ft.replace(R.id.fragment_container, ThumbnailDetailFragment.newInstance(thumbnail))
         ft.addToBackStack("List")
         ft.commit()
+    }
+
+    override fun getTaskType(): MLKitTaskType {
+        return taskType
     }
 }

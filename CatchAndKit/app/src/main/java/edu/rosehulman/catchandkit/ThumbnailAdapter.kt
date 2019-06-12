@@ -85,8 +85,8 @@ class ThumbnailAdapter(
     // But if too small, recognition accuracy can suffer.
     inner class ImageRescaleTask(val localPath: String) : AsyncTask<Void, Void, Bitmap>() {
         override fun doInBackground(vararg p0: Void?): Bitmap? {
-            // Reduces length and width by a factor (currently 1 = no rescaling).
-            val ratio = 1
+            // Reduces length and width by a factor (currently 2).
+            val ratio = 2
             return BitmapUtils.rotateAndScaleByRatio(context, localPath, ratio)
         }
 
