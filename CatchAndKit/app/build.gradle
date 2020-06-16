@@ -36,12 +36,12 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'androidx.exifinterface:exifinterface:1.1.0'
+    implementation 'androidx.exifinterface:exifinterface:1.2.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.media:media:1.1.0'
-    implementation 'com.google.android.material:material:1.0.0'
-    implementation 'com.google.firebase:firebase-firestore:21.3.1'
-    implementation "com.google.firebase:firebase-auth:19.2.0"
+    implementation 'com.google.android.material:material:1.1.0'
+    implementation 'com.google.firebase:firebase-firestore:21.4.3'
+    implementation "com.google.firebase:firebase-auth:19.3.1"
     implementation 'com.squareup.picasso:picasso:2.71828'
 }
 
